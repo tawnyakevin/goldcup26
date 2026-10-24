@@ -84,7 +84,7 @@ body.display-mode .preview{position:fixed;inset:0}
   font-variant-numeric:tabular-nums;text-shadow:0 8px 30px rgba(0,0,0,.6)}
 .t-score.bump{animation:bump .6s ease-out}
 @keyframes bump{0%{transform:scale(1.12);color:var(--gold-hi)}100%{transform:scale(1)}}
-.t-meta{margin-top:auto;display:flex;gap:44px;align-items:center;font-size:24px;font-weight:600;color:rgba(245,242,235,.75)}
+.t-meta{margin-top:auto;display:flex;flex-direction:column;gap:12px;align-items:center;font-size:24px;font-weight:600;color:rgba(245,242,235,.75)}
 .t-meta b{font-weight:800;color:var(--ivory)}
 .to-dots{display:inline-flex;gap:10px;margin-left:12px;vertical-align:middle}
 .to-dots i{width:22px;height:22px;border-radius:50%;border:3px solid var(--gold);display:inline-block}
@@ -93,6 +93,11 @@ body.display-mode .preview{position:fixed;inset:0}
   font-family:var(--display);font-size:40px;letter-spacing:5px;padding:8px 30px 4px;border-radius:12px;display:none}
 .team.winner .t-crown{display:block}
 .team.winner .t-chip{visibility:hidden}
+.qo{display:inline-flex;gap:10px;margin-left:12px;vertical-align:middle}
+.qo i{width:36px;height:36px;border-radius:50%;border:3px solid rgba(232,180,58,.45);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-family:var(--display);font-size:24px;color:rgba(245,242,235,.45);padding-top:3px}
+.qo i.on{background:var(--gold);border-color:var(--gold);color:#000}
+.c-flag{display:table;margin:0 auto 8px;max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--display);font-size:36px;letter-spacing:3px;line-height:1;padding:8px 24px 4px;border-radius:10px;color:#fff}
+.btn.qo-btn.done{background:var(--gold);color:#000;opacity:1}
 
 .center{display:flex;flex-direction:column;align-items:center;text-align:center}
 .center img{width:300px;height:auto;filter:drop-shadow(0 0 40px rgba(232,180,58,.45))}
@@ -201,9 +206,14 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
         <button class="btn outline-red big" data-act="incorrect">Incorrect</button>
       </div>
       <div class="row">
+        <button class="btn" data-act="interrupt">Interruption</button>
         <button class="btn" data-act="foul">Foul −5</button>
-        <button class="btn" data-act="bonus">Bonus +10</button>
         <button class="btn" data-act="timeout">Timeout</button>
+      </div>
+      <div class="row">
+        <button class="btn qo-btn" data-act="qo" data-qz="1">Quiz out Q1</button>
+        <button class="btn qo-btn" data-act="qo" data-qz="2">Quiz out Q2</button>
+        <button class="btn qo-btn" data-act="qo" data-qz="3">Quiz out Q3</button>
       </div>
       <div class="row">
         <button class="btn ghost" data-act="minus5">Adjust −5</button>
@@ -218,9 +228,14 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
         <button class="btn outline-green big" data-act="incorrect">Incorrect</button>
       </div>
       <div class="row">
+        <button class="btn" data-act="interrupt">Interruption</button>
         <button class="btn" data-act="foul">Foul −5</button>
-        <button class="btn" data-act="bonus">Bonus +10</button>
         <button class="btn" data-act="timeout">Timeout</button>
+      </div>
+      <div class="row">
+        <button class="btn qo-btn" data-act="qo" data-qz="1">Quiz out Q1</button>
+        <button class="btn qo-btn" data-act="qo" data-qz="2">Quiz out Q2</button>
+        <button class="btn qo-btn" data-act="qo" data-qz="3">Quiz out Q3</button>
       </div>
       <div class="row">
         <button class="btn ghost" data-act="minus5">Adjust −5</button>
@@ -242,7 +257,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
 
     <div class="card">
       <h2>How scoring works here</h2>
-      <p class="keys">Pick the question’s point value first. <b>Correct</b> adds it and moves to the next question. <b>Incorrect</b> subtracts half and keeps the question open so it can be reread for the other team; press <b>Next question</b> when done. Fouls are −5. Timeouts: 3 per team, plus 1 in overtime, 30 seconds each.</p>
+      <p class="keys">Pick the question’s point value first. <b>Correct</b> adds it and moves to the next question. <b>Incorrect</b> subtracts half and keeps the question open so it can be reread for the other team; press <b>Next question</b> when done. Fouls are −5. A quiz out adds 20 and can be used once per quizzer. Tap <b>Interruption</b> before scoring an interrupted answer; if it’s incorrect, the board shows the reread for the other team. Timeouts: 3 per team, plus 1 in overtime, 30 seconds each.</p>
     </div>
 
     <div class="card">
@@ -250,6 +265,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
       <p class="keys"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> point value 10/20/30<br>
       <kbd>A</kbd> red correct, <kbd>S</kbd> red incorrect<br>
       <kbd>K</kbd> green correct, <kbd>L</kbd> green incorrect<br>
+      <kbd>Q</kbd> red interruption, <kbd>P</kbd> green interruption<br>
       <kbd>N</kbd> next question, <kbd>U</kbd> undo<br>
       <kbd>H</kbd> hide or show controls</p>
     </div>
@@ -269,7 +285,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
           <div class="t-chip"></div>
           <div class="t-name" id="dName0">Red team</div>
           <div class="t-score" id="dScore0">0</div>
-          <div class="t-meta"><span>Timeouts<span class="to-dots" id="dTO0"></span></span></div>
+          <div class="t-meta"><span>Timeouts<span class="to-dots" id="dTO0"></span></span><span>Quiz outs<span class="qo" id="dQO0"></span></span></div>
         </div>
 
         <div class="center">
@@ -282,7 +298,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
           <div class="t-chip"></div>
           <div class="t-name" id="dName1">Green team</div>
           <div class="t-score" id="dScore1">0</div>
-          <div class="t-meta"><span>Timeouts<span class="to-dots" id="dTO1"></span></span></div>
+          <div class="t-meta"><span>Timeouts<span class="to-dots" id="dTO1"></span></span><span>Quiz outs<span class="qo" id="dQO1"></span></span></div>
         </div>
       </section>
 
@@ -312,7 +328,8 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
   function fresh(){
     return {
       v:1, rev:0,
-      teams:[{name:"Red team",score:0,to:0},{name:"Green team",score:0,to:0}],
+      teams:[{name:"Red team",score:0,to:0,qo:[false,false,false]},{name:"Green team",score:0,to:0,qo:[false,false,false]}],
+      interrupt:null, reread:null,
       q:1, value:null,
       log:{},            // q -> {value, correct:teamIdx|null, wrong:[teamIdx]}
       last:null,         // {team, text}
@@ -387,11 +404,12 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
     commit(function(s){ s.value=v; var e=entry(s); e.value=v; });
   }
   function advance(s){
+    s.interrupt = null; s.reread = null;
     s.q++;
     s.value = phaseOf(s.q)==="sd" ? 20 : null;
     if(s.value) s.log[s.q] = {value:20, correct:null, wrong:[]};
   }
-  function act(t, kind){
+  function act(t, kind, qz){
     if(state.final && kind!=="plus5" && kind!=="minus5") return;
     var name = state.teams[t].name;
     if(kind==="correct"){
@@ -401,11 +419,17 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
     }else if(kind==="incorrect"){
       if(!state.value) return flashNeedValue();
       commit(function(s){ var v=s.value, d=v/2, e=entry(s); s.teams[t].score-=d; if(e.wrong.indexOf(t)<0) e.wrong.push(t); e.value=v;
-        s.last={team:t,text:name+" missed question "+qLabel(s.q)+", −"+d}; });
+        s.last={team:t,text:name+" missed question "+qLabel(s.q)+", −"+d};
+        if(s.interrupt===t){ s.reread=1-t; s.last.text+=", reread for "+s.teams[1-t].name; } s.interrupt=null; });
     }else if(kind==="foul"){
       commit(function(s){ s.teams[t].score-=5; s.last={team:t,text:"Foul on "+name+", −5"}; });
-    }else if(kind==="bonus"){
-      commit(function(s){ s.teams[t].score+=10; s.last={team:t,text:"Bonus for "+name+", +10"}; });
+    }else if(kind==="qo"){
+      if((state.teams[t].qo||[])[qz-1]) return;
+      commit(function(s){ var T=s.teams[t]; T.qo=(T.qo||[false,false,false]).slice(); T.qo[qz-1]=true; T.score+=20;
+        s.last={team:t,text:"Quizzer "+qz+" of "+name+" quizzed out, +20"}; });
+    }else if(kind==="interrupt"){
+      if(state.interrupt===t) return;
+      commit(function(s){ s.interrupt=t; s.reread=null; s.last={team:t,text:"Interruption, "+name}; });
     }else if(kind==="plus5"||kind==="minus5"){
       var d = kind==="plus5"?5:-5;
       commit(function(s){ s.teams[t].score+=d; s.last={team:t,text:"Score adjusted for "+name+", "+(d>0?"+":"−")+Math.abs(d)}; });
@@ -443,6 +467,8 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
       var dots = "", m = maxTO();
       for(var k=0;k<m;k++) dots += '<i class="'+(k < m - T[i].to ? "on" : "")+'"></i>';
       $("dTO"+i).innerHTML = dots;
+      var q3 = T[i].qo || [];
+      $("dQO"+i).innerHTML = [1,2,3].map(function(n){ return '<i class="'+(q3[n-1]?"on":"")+'">'+n+'</i>'; }).join("");
     }
 
     // center
@@ -454,7 +480,10 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
     }else{
       var ph = phaseOf(state.q);
       var head = ph==="reg" ? "Question "+state.q+" of "+REG : (ph==="ot1" ? "Overtime" : "Sudden death");
-      html += '<div class="c-q"><small>'+esc(head)+'</small>'+(ph==="reg" ? (state.value ? state.value+" points" : "Question "+state.q) : (state.value ? state.value+" points" : "OT question "+(state.q-REG)))+'</div>';
+      var flag = "";
+      if(state.interrupt===0||state.interrupt===1) flag = '<span class="c-flag" style="background:'+TEAM_COLORS[state.interrupt]+'">Interruption</span>';
+      else if(state.reread===0||state.reread===1) flag = '<span class="c-flag" style="background:'+TEAM_COLORS[state.reread]+'">Reread for '+esc(state.teams[state.reread].name)+'</span>';
+      html += '<div class="c-q">'+(flag || '<small>'+esc(head)+'</small>')+(ph==="reg" ? (state.value ? state.value+" points" : "Question "+state.q) : (state.value ? state.value+" points" : "OT question "+(state.q-REG)))+'</div>';
       html += '<div class="vals">';
       [10,20,30].forEach(function(v){
         var left = r[v], cls = "val"+(state.value===v?" active":"")+((left<=0 && state.value!==v)?" out":"");
@@ -509,7 +538,11 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
       card.querySelector('[data-act="incorrect"]').disabled = noVal;
       card.querySelector('[data-act="timeout"]').disabled = state.final || T[i].to>=maxTO();
       card.querySelector('[data-act="timeout"]').textContent = "Timeout ("+(maxTO()-T[i].to)+")";
-      ["foul","bonus"].forEach(function(a){ card.querySelector('[data-act="'+a+'"]').disabled = state.final; });
+      ["foul","interrupt"].forEach(function(a){ card.querySelector('[data-act="'+a+'"]').disabled = state.final; });
+      card.querySelector('[data-act="interrupt"]').classList.toggle("gold", state.interrupt===i);
+      var qa = T[i].qo || [];
+      card.querySelectorAll(".qo-btn").forEach(function(b){ var n=+b.dataset.qz; b.classList.toggle("done", !!qa[n-1]);
+        b.disabled = state.final || !!qa[n-1]; b.textContent = qa[n-1] ? "Q"+n+" done ✓" : "Quiz out Q"+n; });
     }
     var ph = phaseOf(state.q);
     $("cQ").innerHTML = state.final ? "Match final" :
@@ -585,7 +618,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
     document.querySelectorAll(".val-btn").forEach(function(b){ b.addEventListener("click", function(){ setValue(+b.dataset.val); }); });
     document.querySelectorAll(".team-ctl").forEach(function(card){
       var t = +card.dataset.team;
-      card.querySelectorAll("[data-act]").forEach(function(b){ b.addEventListener("click", function(){ act(t, b.dataset.act); }); });
+      card.querySelectorAll("[data-act]").forEach(function(b){ b.addEventListener("click", function(){ act(t, b.dataset.act, +b.dataset.qz); }); });
     });
     $("btnNext").addEventListener("click", next);
     $("btnUndo").addEventListener("click", doUndo);
@@ -611,7 +644,7 @@ body.present .hint{display:block;animation:fadehint 4s forwards}
       var map = {"1":function(){setValue(10);},"2":function(){setValue(20);},"3":function(){setValue(30);},
         "a":function(){act(0,"correct");},"s":function(){act(0,"incorrect");},
         "k":function(){act(1,"correct");},"l":function(){act(1,"incorrect");},
-        "n":next,"u":doUndo,"h":togglePresent,"escape":function(){ if(document.body.classList.contains("display-mode")) togglePresent(); }};
+        "q":function(){act(0,"interrupt");},"p":function(){act(1,"interrupt");},"n":next,"u":doUndo,"h":togglePresent,"escape":function(){ if(document.body.classList.contains("display-mode")) togglePresent(); }};
       if(map[k]){ e.preventDefault(); map[k](); }
     });
   }
